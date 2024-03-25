@@ -5,16 +5,16 @@ use crate::{models::*, persistance::answers_dao, AppState};
 mod handlers_inner;
 
 impl IntoResponse for handlers_inner::HandlerError {
-  fn into_response(self) -> axum::response::Response {
-      match self {
-          handlers_inner::HandlerError::BadRequest(msg) => {
-              (StatusCode::BAD_REQUEST, msg).into_response()
-          }
-          handlers_inner::HandlerError::InternalError(msg) => {
-              (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response()
-          }
-      }
-  }
+    fn into_response(self) -> axum::response::Response {
+        match self {
+            handlers_inner::HandlerError::BadRequest(msg) => {
+                (StatusCode::BAD_REQUEST, msg).into_response()
+            }
+            handlers_inner::HandlerError::InternalError(msg) => {
+                (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response()
+            }
+        }
+    }
 }
 
 // ---- CRUD for Questions ----
@@ -27,29 +27,30 @@ pub async fn create_question(
     let questions_dao = questions_dao.as_ref();
     let question = handlers_inner::create_question(question, questions_dao).await;
     match question {
-      Ok(question) => Json(question).into_response(),
-      Err(error) => error.into_response(),
+        Ok(question) => Json(question).into_response(),
+        Err(error) => error.into_response(),
     }
 }
 
-pub async fn read_questions(// TODO: add questions_dao from app state as an argument
-  State(AppState { questions_dao, ..}): State<AppState> 
+pub async fn read_questions(
+    // TODO: add questions_dao from app state as an argument
+    State(AppState { questions_dao, .. }): State<AppState>,
 ) -> impl IntoResponse {
-  let questions = handlers_inner::read_questions(questions_dao.as_ref()).await;
-  match questions {
-    Ok(questions) => Json(questions).into_response(),
-    Err(error) => error.into_response(),
-  }
+    let questions = handlers_inner::read_questions(questions_dao.as_ref()).await;
+    match questions {
+        Ok(questions) => Json(questions).into_response(),
+        Err(error) => error.into_response(),
+    }
 }
 
 pub async fn delete_question(
     // TODO: add questions_dao from app state as an argument
-    State(AppState { questions_dao, ..}): State<AppState>,
+    State(AppState { questions_dao, .. }): State<AppState>,
     Json(question_uuid): Json<QuestionId>,
 ) -> impl IntoResponse {
     match handlers_inner::delete_question(question_uuid, questions_dao.as_ref()).await {
-      Ok(_) => StatusCode::OK,
-      Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        Ok(_) => StatusCode::OK,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
 }
 
@@ -63,8 +64,8 @@ pub async fn create_answer(
     let answers_dao = answers_dao.as_ref();
     let answer = handlers_inner::create_answer(answer, answers_dao).await;
     match answer {
-      Ok(answer) => Json(answer).into_response(),
-      Err(error) => error.into_response(),
+        Ok(answer) => Json(answer).into_response(),
+        Err(error) => error.into_response(),
     }
 }
 
@@ -73,11 +74,11 @@ pub async fn read_answers(
     State(AppState { answers_dao, .. }): State<AppState>,
     Json(question_uuid): Json<QuestionId>,
 ) -> impl IntoResponse {
-  let answers = handlers_inner::read_answers(question_uuid, answers_dao.as_ref()).await;
-  match answers {
-    Ok(answers) => Json(answers).into_response(),
-    Err(error) => error.into_response(),
-  }
+    let answers = handlers_inner::read_answers(question_uuid, answers_dao.as_ref()).await;
+    match answers {
+        Ok(answers) => Json(answers).into_response(),
+        Err(error) => error.into_response(),
+    }
 }
 
 pub async fn delete_answer(
@@ -85,8 +86,8 @@ pub async fn delete_answer(
     State(AppState { answers_dao, .. }): State<AppState>,
     Json(answer_uuid): Json<AnswerId>,
 ) -> impl IntoResponse {
-  match handlers_inner::delete_answer(answer_uuid, answers_dao.as_ref()).await {
-    Ok(_) => StatusCode::OK,
-    Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
-  }
+    match handlers_inner::delete_answer(answer_uuid, answers_dao.as_ref()).await {
+        Ok(_) => StatusCode::OK,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+    }
 }

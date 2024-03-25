@@ -1,16 +1,17 @@
 // TODO: import log, pretty_env_logger, dotenv, and PgPoolOptions
 extern crate pretty_env_logger;
 
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 use std::sync::Arc;
 
-use dotenvy::dotenv;
-use persistance::{answers_dao::AnswersDao, questions_dao::QuestionsDao};
-use sqlx::postgres::PgPoolOptions;
 use axum::{
     routing::{delete, get, post},
     Router,
 };
+use dotenvy::dotenv;
+use persistance::{answers_dao::AnswersDao, questions_dao::QuestionsDao};
+use sqlx::postgres::PgPoolOptions;
 
 mod handlers;
 mod models;
@@ -36,18 +37,18 @@ async fn main() {
 
     // Create a new PgPoolOptions instance with a maximum of 5 connections.
     let pool = PgPoolOptions::new()
-     .max_connections(5)
-     .connect(&database_url)
-     .await
-     .expect("failed to connect to database");
+        .max_connections(5)
+        .connect(&database_url)
+        .await
+        .expect("failed to connect to database");
 
-     let questions_dao = QuestionsDaoImpl::new(pool.clone());
-     let answers_dao = AnswersDaoImpl::new(pool.clone()); // create a new instance of AnswersDaoImpl passing in `pool`
- 
-     let app_state = AppState {
+    let questions_dao = QuestionsDaoImpl::new(pool.clone());
+    let answers_dao = AnswersDaoImpl::new(pool.clone()); // create a new instance of AnswersDaoImpl passing in `pool`
+
+    let app_state = AppState {
         questions_dao: Arc::new(questions_dao),
         answers_dao: Arc::new(answers_dao),
-     }; // create a new instance of AppState
+    }; // create a new instance of AppState
 
     let app = Router::new()
         .route("/question", post(create_question))
